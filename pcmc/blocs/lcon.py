@@ -42,7 +42,7 @@ async def connect():
     config.screen = screenutils.Screen(screen_name)
     if not config.screen.exists:
         return False
-    config.logs = su.screen.tailf(logfile)
+    config.logs = screenutils.screen.tailf(logfile)
     config.online = True
     return True
 
