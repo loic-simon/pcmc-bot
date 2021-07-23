@@ -34,6 +34,18 @@ async def _update_custom_team(joueur):
 async def _remove_custom_team(joueur):
     await server.command(f"team remove {joueur.team}")
 
+async def _create_webhook(joueur):
+    wh = await config.Channel.server.create_webhook(
+        name=f"[MINECRAFT] {joueur.nom}",
+        avatar=await joueur.member.avatar_url_as().read()
+    )
+    joueur._webhook_id = wh.id
+    joueur.update()
+
+async def _update_webhook(joueur):
+    wh = await joueur.get_webhook()
+    await wh.edit(name=f"[MINECRAFT] {joueur.nom}")
+
 
 class Whitelist(commands.Cog):
     """Commandes de communication directe avec le serveur"""
@@ -185,10 +197,17 @@ class Whitelist(commands.Cog):
             elif joueur.nom != old_nom:
                 await _update_custom_team(joueur)
 
+        await chan.send("Quelques petits détails techniques...")
+
+        async with chan.typing():
+            # Attribution rôles + création webhook
 
             # Grant accès aux channels joueurs et information
             if new:
                 await member.add_roles(config.Role.joueurs)
+                await _create_webhook(joueur)
+            elif joueur.nom != old_nom:
+                await _update_webhook(joueur)
 
 
         # Conseiller d'ACTIVER TOUTES LES NOTIFS du chan

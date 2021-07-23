@@ -60,6 +60,11 @@ class Joueur(base.TableBase):
         doc="Si le joueur est actuellement connecté",
     )
 
+    _webhook_id = autodoc_Column(
+        sqlalchemy.BigInteger(),
+        doc="ID du webhook pour parler en tant que le joueur",
+    )
+
     def __repr__(self):
         """Return repr(self)."""
         return f"<Joueur #{self.discord_id} ({self.nom})>"
@@ -98,6 +103,15 @@ class Joueur(base.TableBase):
         Retourne ``team_`` suivi du début du pseudo du joueur.
         """
         return "team_" + self.pseudo[:10]
+
+    async def get webhook(self):
+        """Récupère le webhook pour parler en tant que le joueur.
+
+        Returns:
+            :class:`discord.Webhook`
+        """
+        return config.bot.fetch_webhook(self._webhook_id)
+
 
     @classmethod
     def from_member(cls, member):
