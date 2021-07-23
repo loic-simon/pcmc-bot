@@ -20,7 +20,8 @@ async def _parse_message(raw, joueur):
     name = joueur.mc_name
     if (mtch := re.fullmatch(f"<{name}> !(.*)", raw)):
         # Message global
-        wh = await joueur.get_webhook(mtch.group(1))
+        wh = await joueur.get_webhook()
+        await wh.send(mtch.group(1))
         # await tools.send_blocs(config.Channel.server, mtch.group(1))
 
     elif (mtch := re.fullmatch(f"{name} left the game", raw)):
