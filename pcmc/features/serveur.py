@@ -43,8 +43,8 @@ async def _parse_message(raw, joueur):
 
 async def parse_console():
     raw = await server.get_last_messages()
-    if raw:
-        await tools.log(raw, code=True, prefixe="PARSING:")
+    # if raw:
+    #     await tools.log(raw, code=True, prefixe="PARSING:")
     mtchs = re.finditer(
         r"\[\d\d:\d\d:\d\d\] \[Server thread/INFO\]: (.*)$", raw, re.M
     )
