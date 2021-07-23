@@ -73,11 +73,12 @@ async def reconnect():
     return await connect()
 
 
-async def command(cmd):
+async def command(cmd, wait=0.5):
     """Exécute une commande Minecraft et retourne le résultat obtenu.
 
     Args:
         cmd (str): la commande Minecraft a exécuter (avec ou sans ``/``)
+        wait (float): le temps à attendre avant de récupérer le résultat
 
     Returns:
         Optionnal[str]: La réponse du serveur, le cas échéant.
@@ -90,16 +91,18 @@ async def command(cmd):
     se reconnecter au serveur (:func:`.reconnect`) puis ré-essaie
     d'exécuter la commande avant de lever une erreur.
     """
+    escaped = cmd.replace('"', r'\"')
+
     next(config.logs)
     try:
-        config.screen.send_commands(cmd)
+        config.screen.send_commands(escaped)
     except _LConException:
         ok = await reconnect()
         if not ok:
             raise
 
-        config.screen.send_commands(cmd)
+        config.screen.send_commands(escaped)
 
     raw = next(config.logs)
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(wait)
     return raw

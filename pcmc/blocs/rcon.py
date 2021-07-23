@@ -68,11 +68,12 @@ async def reconnect():
     return await connect()
 
 
-async def command(cmd):
+async def command(cmd, wait=0.5):
     """Exécute une commande Minecraft et retourne le résultat obtenu.
 
     Args:
         cmd (str): la commande Minecraft a exécuter (avec ou sans ``/``)
+        wait (float): ignoré ici, pour compatibilité avec ``lcon``
 
     Returns:
         Optionnal[str]: La réponse du serveur, le cas échéant.
