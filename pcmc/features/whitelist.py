@@ -13,26 +13,26 @@ from discord.ext import commands
 
 from pcmc import config
 from pcmc.bdd import Joueur
-from pcmc.blocs import tools, rcon
+from pcmc.blocs import tools, server
 from pcmc.features import serveur
 
 
 async def _add_to_whitelist(pseudo):
-    await rcon.command(f"whitelist add {pseudo}")
+    await server.command(f"whitelist add {pseudo}")
 
 async def _remove_from_whitelist(pseudo):
-    await rcon.command(f"whitelist remove {pseudo}")
+    await server.command(f"whitelist remove {pseudo}")
 
 async def _create_custom_team(joueur):
-    await rcon.command(f"team add {joueur.team}")
-    await rcon.command(f"team join {joueur.team} {joueur.pseudo}")
+    await server.command(f"team add {joueur.team}")
+    await server.command(f"team join {joueur.team} {joueur.pseudo}")
 
 async def _update_custom_team(joueur):
-    await rcon.command(f"team modify {joueur.team} suffix "
+    await server.command(f"team modify {joueur.team} suffix "
                        f"\" – {joueur.nom}\"")
 
 async def _remove_custom_team(joueur):
-    await rcon.command(f"team remove {joueur.team}")
+    await server.command(f"team remove {joueur.team}")
 
 
 class Whitelist(commands.Cog):

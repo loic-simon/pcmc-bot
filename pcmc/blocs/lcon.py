@@ -1,18 +1,18 @@
-"""pcmc-bot / blocs / Communication distante avec le serveur Minecraft
+"""pcmc-bot / blocs / Communication locale avec le serveur Minecraft
 
-Force la communication distante : privilégier pcmc.blocs.server.
+Force la communication locale : privilégier pcmc.blocs.server.
 
 """
 
-import asyncio
+import os
 
-import asyncrcon
+import screenutils
 
 from pcmc import config
 from pcmc.blocs import env
 
 
-_RConException = asyncrcon.MaxRetriesExceedException
+_LConException = screenutils.errors.ScreenNotFoundError
 
 
 async def connect():
@@ -21,23 +21,28 @@ async def connect():
     Returns:
         ``True`` (la connexion a réussi) ou ``False`` (la connexion a échoué)
 
-    L'IP et le mot de passe du serveur sont lus par cette fonction depuis
-    les variables d'environnement ``PCMC_RCON_IP`` et ``PCMC_RCON_PASSWORD``.
+    Le *screen* Unix sur lequel tourne le serveur et le chemin d'accès
+    (relatif ou abolu) aux logs actuels générés par le serveur sont lus
+    par cette fonction depuis les variables d'environnement
+    ``PCMC_LCON_SCREEN_NAME`` et ``PCMC_LCON_LOGFILE``.
 
     Si le bot est déjà connecté, retourne directement ``True``
     (sans vérifier l'état de la connexion).
     """
     if config.online:
         return True
-    ip = env.load("PCMC_RCON_IP")
-    password = env.load("PCMC_RCON_PASSWORD")
-    config.mcr = asyncrcon.AsyncRCON(ip, password)
-    try:
-        await config.mcr.open_connection()
-    except (OSError, _RConException):
-        config.online = False
-        return False
 
+    screen_name = env.load("PCMC_LCON_SCREEN_NAME")
+    logfile = os.path.abspath(env.load("PCMC_LCON_LOGFILE"))
+
+    if not os.path.isfile(logfile):
+        raise RuntimeError(f"File '{logfile}' does not exist "
+                           "(check PCMC_LCON_LOGFILE value).") from None
+
+    config.screen = screenutils.Screen(screen_name)
+    if not config.screen.exists:
+        return False
+    config.logs = su.screen.tailf(logfile)
     config.online = True
     return True
 
@@ -49,8 +54,8 @@ def disconnect():
     """
     if not config.online:
         pass
-    config.mcr.close()
-    config.mcr = None
+    config.screen = None
+    config.logs = None
     config.online = False
 
 
@@ -64,7 +69,6 @@ async def reconnect():
         bool: La valeur retournée par :func:`.connect`.
     """
     disconnect()
-    await asyncio.sleep(2)
     return await connect()
 
 
@@ -78,18 +82,22 @@ async def command(cmd):
         Optionnal[str]: La réponse du serveur, le cas échéant.
 
     Raises:
-        ConnectionError: Il y a eu un problème de communication
-            avec le serveur.
+        screenutils.errors.ScreenNotFoundError: Il y a eu un problème de
+            communication avec le serveur.
 
     En cas d'erreur de communication, cette fonction tente d'abord de
     se reconnecter au serveur (:func:`.reconnect`) puis ré-essaie
     d'exécuter la commande avant de lever une erreur.
     """
+    next(config.logs)
     try:
-        return await config.mcr.command(cmd)
-    except (OSError, _RConException):
+        config.screen.send_commands(cmd)
+    except _LConException:
         ok = await reconnect()
         if not ok:
             raise
 
-        return await config.mcr.command(cmd)
+        config.screen.send_commands(cmd)
+
+    raw = next(config.logs)
+    return raw

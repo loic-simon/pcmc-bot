@@ -116,6 +116,8 @@ class _ModuleGlobals(ready_check.ReadyCheck):
 
     online = False
     mcr = None
+    screen = None
+    logs = None
 
 
 # Variable interne, pour suivi des objets manquants (ne pas changer)

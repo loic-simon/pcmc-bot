@@ -14,7 +14,7 @@ from discord.ext import commands
 
 from pcmc import __version__, config, bdd
 from pcmc.bdd import *
-from pcmc.blocs import env, tools, one_command, ready_check, rcon
+from pcmc.blocs import env, tools, one_command, ready_check, server
 from pcmc.features import *        # Tous les sous-modules
 
 
@@ -329,7 +329,7 @@ class PCMCBot(commands.Bot):
         peut tourner en parallèle dans un interpréteur.
 
         (Ceci est du aux objets de :mod:`.config`, contenant directement
-        le bot, le serveur Discord, la connexion rcon... ;
+        le bot, le serveur Discord, le contrôle du server... ;
         cette limitation résulte d'une orientation volontaire pour simplifier
         et optimiser la manipulation des objects et fonctions).
 
@@ -588,7 +588,7 @@ class PCMCBot(commands.Bot):
     async def _update_connection(self):
         self.loop.call_later(60, self.update_connection)
 
-        online = await rcon.connect()
+        online = await server.connect()
         if online:
             si = await serveur.get_online_players()
             players = si.n_players
@@ -626,7 +626,7 @@ class PCMCBot(commands.Bot):
         self.loop.create_task(self._update_connection())
 
     async def close(self):
-        rcon.disconnect()
+        server.disconnect()
         await super().close()
 
     # Lancement du bot

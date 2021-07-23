@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## Unreleased
+
+### Added
+
+   - Local server control with :mod:`.blocs.lcon` using the same
+     API than :mod:`.blocs.rcon`;
+   - General server control module :mod:`.blocs.server` proxying
+     :mod:`.blocs.lcon` or :mod:`.blocs.rcon` depending on the value
+     of the new environment variable ``PCMC_CONTROL_MODE``.
+
+### Fixed
+
+   - RCon failing to reconnect in some cases.
+
+
 ## 1.1.0 - 2021-07-23
 
 ### Added

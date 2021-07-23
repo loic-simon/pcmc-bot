@@ -10,7 +10,7 @@ __author__ = "Loïc Simon"
 __license__ = "MIT"
 __copyright__ = ("Copyright 2021 Loïc Simon - "
                  "GRIs – ESPCI Paris - PSL")
-__version__ = "1.0.0"
+__version__ = "1.2.0"
 __all__ = ["PCMCBot"]
 
 

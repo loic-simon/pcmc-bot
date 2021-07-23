@@ -14,7 +14,7 @@ import discord
 from discord.ext import commands
 
 from pcmc import __version__, config, features, blocs
-from pcmc.blocs import tools, realshell, one_command, rcon
+from pcmc.blocs import tools, realshell, one_command, server
 
 
 async def _filter_runnables(commands, ctx):

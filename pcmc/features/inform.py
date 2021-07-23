@@ -10,7 +10,7 @@ import discord
 from discord.ext import commands
 
 from pcmc import config
-from pcmc.blocs import tools, rcon
+from pcmc.blocs import tools, server
 
 
 async def new_message(message):
@@ -64,7 +64,7 @@ async def new_message(message):
             "hoverEvent": {"action": "show_text",
                            "contents": "Voir le fichier"},
         })
-    await rcon.command(f"tellraw @a " + json.dumps(texts))
+    await server.command(f"tellraw @a " + json.dumps(texts))
 
 
 async def voice_connect(member, channel):
@@ -95,7 +95,7 @@ async def voice_connect(member, channel):
             "italic": True,
         },
     ]
-    await rcon.command(f"tellraw @a " + json.dumps(texts))
+    await server.command(f"tellraw @a " + json.dumps(texts))
 
 
 async def voice_disconnect(member, channel):
@@ -126,4 +126,4 @@ async def voice_disconnect(member, channel):
             "italic": True,
         },
     ]
-    await rcon.command(f"tellraw @a " + json.dumps(texts))
+    await server.command(f"tellraw @a " + json.dumps(texts))
