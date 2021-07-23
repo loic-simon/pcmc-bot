@@ -104,6 +104,7 @@ async def _on_ready(bot):
 
     await server.connect()
     bot.update_connection()
+    await serveur.update_connection()
     await tools.log("Just rebooted!")
 
     # # Tâches planifiées
@@ -171,7 +172,8 @@ async def _on_message(bot, message):
     ctx = await bot.get_context(message)
     await bot.invoke(ctx)
 
-    if (not message.content.startswith(bot.command_prefix)):
+    if (not message.content.startswith(bot.command_prefix)
+        and not message.webhook_id):
         # Conditions d'IA respectées (voir doc) : on trigger
         if not config.online:
             return

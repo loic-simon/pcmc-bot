@@ -36,7 +36,7 @@ async def _remove_custom_team(joueur):
 
 async def _create_webhook(joueur):
     wh = await config.Channel.server.create_webhook(
-        name=f"[MINECRAFT] {joueur.nom}",
+        name=f"[MC] {joueur.nom}",
         avatar=await joueur.member.avatar_url_as().read()
     )
     joueur._webhook_id = wh.id

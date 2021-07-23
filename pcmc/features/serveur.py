@@ -67,7 +67,7 @@ async def update_connection():
         activity = discord.Game("Minecraft 🔴 OFFLINE")
         status = discord.Status.dnd
 
-    if self.old_activity != activity:
+    if config.bot.old_activity != activity:
         await tools.log(f"Présence mise à jour : {activity}")
         await config.bot.change_presence(activity=activity, status=status)
         config.bot.old_activity = activity
