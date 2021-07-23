@@ -13,7 +13,8 @@ import sys
 import discord
 from discord.ext import commands
 
-from pcmc import __version__, config, features, blocs
+from pcmc import __version__, config, features, blocs, bdd
+from pcmc.bdd import *
 from pcmc.blocs import tools, realshell, one_command, server
 
 

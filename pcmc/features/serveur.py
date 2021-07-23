@@ -44,9 +44,10 @@ async def parse_console():
     if raw:
         await tools.log(raw, code=True, prefixe="PARSING:")
     mtchs = re.finditer(
-        r"[\d\d:\d\d:\d\d] [Server thread/INFO]: (.*)$", raw, re.M
+        r"\[\d\d:\d\d:\d\d\] \[Server thread/INFO\]: (.*)$", raw, re.M
     )
     for mtch in mtchs:
+        await tools.log(raw, code=True, prefixe="PARSING:")
         for joueur in Joueur.query.all():
             if joueur.mc_name in mtch.group(1):
                 await _parse_message(mtch.group(1), joueur)
