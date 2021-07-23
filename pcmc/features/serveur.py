@@ -12,7 +12,40 @@ import discord
 from discord.ext import commands
 
 from pcmc import config
+from pcmc.bdd import Joueur
 from pcmc.blocs import tools, server
+
+
+async def _parse_message(raw, joueur):
+    name = joueur.mc_name
+    if (mtch := re.fullmatch(f"<{name}> !(.*)$", raw, re.M)):
+        # Message global
+        await tools.send_blocs(config.Channel.server, mtch.group(1))
+
+    elif (mtch := re.fullmatch(f"{name} left the game$", raw, re.M)):
+        # Déconnexion
+        await tools.log(f"Déconnexion : {joueur}")
+        await joueur.member.remove_roles(config.Role.en_jeu)
+        joueur.en_jeu = False
+        joueur.update()
+        config.bot.update_connection()
+
+    elif (mtch := re.fullmatch(f"{name} joined the game$", raw, re.M)):
+        # Connexion
+        await tools.log(f"Connexion : {joueur}")
+        await joueur.member.add_roles(config.Role.en_jeu)
+        joueur.en_jeu = True
+        joueur.update()
+
+
+async def parse_console():
+    raw = await server.get_last_messages()
+    mtchs = re.finditer(
+        r"[\d\d:\d\d:\d\d] [Server thread/INFO]: (.*)$", raw, re.M
+    )
+    for mtch in mtchs:
+        for joueur in Joueur.query.all():
+            await _parse_message(mtch.group(1), joueur)
 
 
 class _ServerInfo():
@@ -35,7 +68,7 @@ async def get_online_players():
         - ``max_players`` : le nombre maximal de joueurs acceptés
           simultanément par le serveur.
     """
-    raw = await server.command("list uuids")
+    raw = await server.command("list uuids", wait=2)
     mtch = re.search(
         "There are (\d+) of a max of (\d+) players online: (.*)$", raw, re.M
     )

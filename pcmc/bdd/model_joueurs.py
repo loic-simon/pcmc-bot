@@ -84,6 +84,14 @@ class Joueur(base.TableBase):
         return result
 
     @property
+    def mc_name(self):
+        """str: Nom affiché dans Minecraft.
+
+        Retourne ``{pseudo} – {nom}``.
+        """
+        return f"{self.pseudo} – {self.nom}"
+
+    @property
     def team(self):
         """str: Nom de l'équipe personnalisée de ce joueur.
 

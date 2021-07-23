@@ -586,7 +586,7 @@ class PCMCBot(commands.Bot):
         self.loop.call_later(60, self.i_am_alive, filename)
 
     async def _update_connection(self):
-        self.loop.call_later(60, self.update_connection)
+        # self.loop.call_later(60, self.update_connection)
 
         online = await server.connect()
         if online:
@@ -604,18 +604,6 @@ class PCMCBot(commands.Bot):
             await self.change_presence(activity=activity, status=status)
             self.old_activity = activity
 
-        pseudos = [pl[0] for pl in si.players] if online else []
-        for joueur in Joueur.query.all():
-            if joueur.pseudo in pseudos and not joueur.en_jeu:
-                await tools.log(f"Connexion : {joueur}")
-                await joueur.member.add_roles(config.Role.en_jeu)
-                joueur.en_jeu = True
-                joueur.update()
-            elif joueur.pseudo not in pseudos and joueur.en_jeu:
-                await tools.log(f"Déconnexion : {joueur}")
-                await joueur.member.remove_roles(config.Role.en_jeu)
-                joueur.en_jeu = False
-                joueur.update()
 
     def update_connection(self):
         """Met à jour l'activité du bot selon le statut du serveur.

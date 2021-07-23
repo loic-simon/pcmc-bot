@@ -78,8 +78,11 @@ class Channel(ready_check.ReadyCheck, check_type=discord.TextChannel):
     Attributes:
         logs: Salon pour les messages techniques.
             Nom par défaut : "logs".
+        server: Salon pour retransmettre les messages du serveur.
+            Nom par défaut : "serveur".
     """
     logs = "logs"
+    server = "serveur"
 
 
 class Emoji(ready_check.ReadyCheck, check_type=discord.Emoji):
