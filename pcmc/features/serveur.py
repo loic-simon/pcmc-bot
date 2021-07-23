@@ -27,17 +27,11 @@ async def _parse_message(raw, joueur):
     elif (mtch := re.fullmatch(f"{name} left the game", raw)):
         # Déconnexion
         await tools.log(f"Déconnexion : {joueur}")
-        await joueur.member.remove_roles(config.Role.en_jeu)
-        joueur.en_jeu = False
-        joueur.update()
         await update_connection()
 
     elif (mtch := re.fullmatch(f"{name} joined the game", raw)):
         # Connexion
         await tools.log(f"Connexion : {joueur}")
-        await joueur.member.add_roles(config.Role.en_jeu)
-        joueur.en_jeu = True
-        joueur.update()
         await update_connection()
 
 
@@ -71,6 +65,19 @@ async def update_connection():
         await tools.log(f"Présence mise à jour : {activity}")
         await config.bot.change_presence(activity=activity, status=status)
         config.bot.old_activity = activity
+
+    pseudos = [pl[0] for pl in si.players] if online else []
+    for joueur in Joueur.query.all():
+        if joueur.pseudo in pseudos and not joueur.en_jeu:
+            await tools.log(f"Connexion : {joueur}")
+            await joueur.member.add_roles(config.Role.en_jeu)
+            joueur.en_jeu = True
+            joueur.update()
+        elif joueur.pseudo not in pseudos and joueur.en_jeu:
+            await tools.log(f"Déconnexion : {joueur}")
+            await joueur.member.remove_roles(config.Role.en_jeu)
+            joueur.en_jeu = False
+            joueur.update()
 
 
 class _ServerInfo():
