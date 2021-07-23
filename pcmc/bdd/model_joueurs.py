@@ -104,7 +104,7 @@ class Joueur(base.TableBase):
         """
         return "team_" + self.pseudo[:10]
 
-    async def get webhook(self):
+    async def get_webhook(self):
         """Récupère le webhook pour parler en tant que le joueur.
 
         Returns:
