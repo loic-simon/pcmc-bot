@@ -36,8 +36,8 @@ async def get_online_players():
           simultanément par le serveur.
     """
     raw = await server.command("list uuids")
-    mtch = re.fullmatch(
-        ".*There are (\d+) of a max of (\d+) players online: (.*)", raw
+    mtch = re.search(
+        "There are (\d+) of a max of (\d+) players online: (.*)$", raw, re.M
     )
     players = [(mt.group(1), mt.group(2)) for pl in mtch.group(3).split(", ")
                if (mt := re.fullmatch(r"(.*) \(([0-9a-f-]{36})\)", pl))]
