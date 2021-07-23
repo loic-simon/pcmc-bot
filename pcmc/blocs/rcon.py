@@ -30,7 +30,7 @@ async def connect():
     config.mcr = asyncrcon.AsyncRCON(ip, password)
     try:
         await config.mcr.open_connection()
-    except OSError:
+    except (OSError, RConException):
         config.online = False
         return False
 
@@ -82,7 +82,7 @@ async def command(cmd):
     """
     try:
         return await config.mcr.command(cmd)
-    except OSError:
+    except (OSError, RConException):
         ok = await reconnect()
         if not ok:
             raise

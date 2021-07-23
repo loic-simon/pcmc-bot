@@ -44,11 +44,17 @@ class Role(ready_check.ReadyCheck, check_type=discord.Role):
     Attributes:
         admin: Responsable du serveur (peut exécuter des commandes OP).
             Nom par défaut : "admin".
+        en_jeu: Joueur actuellement connecté sur le serveur.
+            Nom par défaut : "En jeu".
+        joueurs: Joueur whitelisté sur le serveur.
+            Nom par défaut : "Joueur".
         everyone: Rôle de base. Les membres dont le rôle le plus élevé
             est ce rôle (ou moins) seront ignorés par le bot.
             Nom par défaut : "@everyone" (rôle Discord de base)
     """
     admin = "admin"
+    en_jeu = "En jeu"
+    joueurs = "Joueurs"
     everyone = "@everyone"
 
 

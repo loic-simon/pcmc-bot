@@ -444,10 +444,10 @@ async def wait_for_react_clic(message, emojis={}, *, process_text=False,
         else:       # Réponse par message / STOP
             mess = done_task.result().content
             ret = post_converter(mess) if post_converter else mess
-            await message.clear_reactions()
+            # await message.clear_reactions()
 
     except Exception:
-        await message.clear_reactions()
+        # await message.clear_reactions()
         raise
 
     return ret

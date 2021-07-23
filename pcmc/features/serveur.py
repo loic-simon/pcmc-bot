@@ -99,8 +99,9 @@ class GestionServeur(commands.Cog):
             )
 
         embed.add_field(
-            name="Vue de la map (s'actualise toutes les heures) :",
-            value="[pcmc.bloomenetwork.fr:8000](http://pcmc.bloomenetwork.fr:8000)",
+            name="Vue de la map (s'actualise toutes les 2 heures) :",
+            value=("[pcmc.bloomenetwork.fr:8000]"
+                   "(http://pcmc.bloomenetwork.fr:8000)"),
             inline=False,
         # ).add_field(
         #     name="Whitelist :",

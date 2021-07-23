@@ -33,7 +33,7 @@ pip install pcmc-bot
 This project is (for now) meant for private usage and therefore not published
 on PyPI. Clone this repository to use it:
 ```bash
-git clone https://github.com.loic-simon/pcmc-bot.git
+git clone https://github.com/loic-simon/pcmc-bot.git
 ```
 
 We strongly recommand to install this package in a dedicated virtualenv

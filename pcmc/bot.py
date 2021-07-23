@@ -12,7 +12,8 @@ import traceback
 import discord
 from discord.ext import commands
 
-from pcmc import __version__, config
+from pcmc import __version__, config, bdd
+from pcmc.bdd import *
 from pcmc.blocs import env, tools, one_command, ready_check, rcon
 from pcmc.features import *        # Tous les sous-modules
 
@@ -95,7 +96,7 @@ async def _on_ready(bot):
     if config.output_liveness:
         bot.i_am_alive()            # Start liveness regular output
 
-    print("[2/2] Initialization (bot.on_ready)...")
+    print("[2/3] Initialization (bot.on_ready)...")
 
     # Préparations des objects globaux
     config.guild = guild
@@ -145,9 +146,9 @@ async def _on_message(bot, message):
         return
 
     if not message.guild:                   # Message privé
-        await message.channel.send(
-            "Je n'accepte pas les messages privés, désolé !"
-        )
+        # await message.channel.send(
+        #     "Je n'accepte pas les messages privés, désolé !"
+        # )
         return
 
     if message.guild != config.guild:       # Mauvais serveur
@@ -377,6 +378,7 @@ class PCMCBot(commands.Bot):
         self.after_invoke(one_command.remove_from_in_command)
 
         self.add_cog(serveur.GestionServeur(self))
+        self.add_cog(whitelist.Whitelist(self))
         # Commandes spéciales, méta-commandes...
         self.remove_command("help")
         self.add_cog(special.Special(self))
@@ -584,6 +586,8 @@ class PCMCBot(commands.Bot):
         self.loop.call_later(60, self.i_am_alive, filename)
 
     async def _update_connection(self):
+        self.loop.call_later(60, self.update_connection)
+
         online = await rcon.connect()
         if online:
             si = await serveur.get_online_players()
@@ -600,7 +604,18 @@ class PCMCBot(commands.Bot):
             await self.change_presence(activity=activity, status=status)
             self.old_activity = activity
 
-        self.loop.call_later(60, self.update_connection)
+        pseudos = [pl[0] for pl in si.players] if online else []
+        for joueur in Joueur.query.all():
+            if joueur.pseudo in pseudos and not joueur.en_jeu:
+                await tools.log(f"Connexion : {joueur}")
+                await joueur.member.add_roles(config.Role.en_jeu)
+                joueur.en_jeu = True
+                joueur.update()
+            elif joueur.pseudo not in pseudos and joueur.en_jeu:
+                await tools.log(f"Déconnexion : {joueur}")
+                await joueur.member.remove_roles(config.Role.en_jeu)
+                joueur.en_jeu = False
+                joueur.update()
 
     def update_connection(self):
         """Met à jour l'activité du bot selon le statut du serveur.
@@ -631,16 +646,16 @@ class PCMCBot(commands.Bot):
         self.GUILD_ID = int(env.load("PCMC_SERVER_ID"))
 
         # Connexion BDD
-        # print("[1/3] Connecting to database...")
-        # bdd.connect()
-        # url = config.engine.url
-        # print(f"      Connected to {url.host}/{url.database}!")
+        print("[1/3] Connecting to database...")
+        bdd.connect()
+        url = config.engine.url
+        print(f"      Connected to {url.host}/{url.database}!")
 
         # Enregistrement
         config.bot = self
 
         # Lancement du bot (bloquant)
-        print("[1/2] Connecting to Discord...")
+        print("[2/3] Connecting to Discord...")
         super().run(PCMC_DISCORD_TOKEN, **kwargs)
 
         print("\nDisconnected.")
