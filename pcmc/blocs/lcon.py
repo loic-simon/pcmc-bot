@@ -4,6 +4,7 @@ Force la communication locale : privilégier pcmc.blocs.server.
 
 """
 
+import asyncio
 import os
 
 import screenutils
@@ -100,4 +101,5 @@ async def command(cmd):
         config.screen.send_commands(cmd)
 
     raw = next(config.logs)
+    await asyncio.sleep(0.5)
     return raw
