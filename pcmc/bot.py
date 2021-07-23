@@ -587,7 +587,7 @@ class PCMCBot(commands.Bot):
 
     async def _update_connection(self):
         self.loop.call_later(2, self.update_connection)
-        await parse_console()
+        await serveur.parse_console()
 
 
     def update_connection(self):
