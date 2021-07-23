@@ -12,7 +12,7 @@ import discord
 from discord.ext import commands
 
 from pcmc import config
-from pcmc.blocs import tools, rcon
+from pcmc.blocs import tools, server
 
 
 class _ServerInfo():
@@ -35,7 +35,7 @@ async def get_online_players():
         - ``max_players`` : le nombre maximal de joueurs acceptés
           simultanément par le serveur.
     """
-    raw = await rcon.command("list uuids")
+    raw = await server.command("list uuids")
     mtch = re.fullmatch(
         "There are (\d+) of a max of (\d+) players online: (.*)", raw
     )
@@ -55,7 +55,7 @@ class GestionServeur(commands.Cog):
         Args:
             command: commande Minecraft à exécuter.
         """
-        res = await rcon.command(command)
+        res = await server.command(command)
         await tools.send_code_blocs(ctx, res)
 
 
@@ -66,7 +66,7 @@ class GestionServeur(commands.Cog):
         Informe sur les joueurs connectés et le nombre de TPS du serveur.
         """
         async with ctx.typing():
-            online = await rcon.connect()
+            online = await server.connect()
             if online:
                 info = await get_online_players()
                 s = "" if info.n_players == 1 else "s"
@@ -115,9 +115,9 @@ class GestionServeur(commands.Cog):
             return
 
         async with ctx.typing():
-            await rcon.command("debug start")
+            await server.command("debug start")
             await asyncio.sleep(10)
-            res = await rcon.command("debug stop")
+            res = await server.command("debug stop")
 
         mtch = re.fullmatch("Stopped tick profiling after \d+\.\d+ seconds "
                             "and \d+ ticks \((\d+\.\d+) ticks per second\)",
@@ -136,4 +136,4 @@ class GestionServeur(commands.Cog):
 
         Peut être utile en cas de non-réponse du serveur.
         """
-        await rcon.reconnect()
+        await server.reconnect()
