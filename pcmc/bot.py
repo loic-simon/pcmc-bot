@@ -102,6 +102,7 @@ async def _on_ready(bot):
     config.guild = guild
     await bot.check_and_prepare_objects()
 
+    await server.connect()
     bot.update_connection()
     await tools.log("Just rebooted!")
 
