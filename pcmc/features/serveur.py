@@ -18,34 +18,55 @@ from pcmc.blocs import tools, server
 
 async def _parse_message(raw, joueur):
     name = joueur.mc_name
-    if (mtch := re.fullmatch(f"<{name}> !(.*)$", raw, re.M)):
+    if (mtch := re.fullmatch(f"<{name}> !(.*)", raw)):
         # Message global
         await tools.send_blocs(config.Channel.server, mtch.group(1))
 
-    elif (mtch := re.fullmatch(f"{name} left the game$", raw, re.M)):
+    elif (mtch := re.fullmatch(f"{name} left the game", raw)):
         # Déconnexion
         await tools.log(f"Déconnexion : {joueur}")
         await joueur.member.remove_roles(config.Role.en_jeu)
         joueur.en_jeu = False
         joueur.update()
-        config.bot.update_connection()
+        await update_connection()
 
-    elif (mtch := re.fullmatch(f"{name} joined the game$", raw, re.M)):
+    elif (mtch := re.fullmatch(f"{name} joined the game", raw)):
         # Connexion
         await tools.log(f"Connexion : {joueur}")
         await joueur.member.add_roles(config.Role.en_jeu)
         joueur.en_jeu = True
         joueur.update()
+        await update_connection()
 
 
 async def parse_console():
     raw = await server.get_last_messages()
+    await tools.send_code_blocs(raw, prefix="PARSING:")
     mtchs = re.finditer(
         r"[\d\d:\d\d:\d\d] [Server thread/INFO]: (.*)$", raw, re.M
     )
     for mtch in mtchs:
         for joueur in Joueur.query.all():
-            await _parse_message(mtch.group(1), joueur)
+            if joueur.mc_name in mtch.group(1):
+                await _parse_message(mtch.group(1), joueur)
+
+
+async def update_connection():
+    online = await server.connect()
+    if online:
+        si = await get_online_players()
+        players = si.n_players
+        s = "" if players == 1 else "s"
+        activity = discord.Game(f"Minecraft 🟢 {players} joueur{s}")
+        status = discord.Status.online
+    else:
+        activity = discord.Game("Minecraft 🔴 OFFLINE")
+        status = discord.Status.dnd
+
+    if self.old_activity != activity:
+        await tools.log(f"Présence mise à jour : {activity}")
+        await config.bot.change_presence(activity=activity, status=status)
+        config.bot.old_activity = activity
 
 
 class _ServerInfo():

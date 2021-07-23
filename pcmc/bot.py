@@ -586,23 +586,8 @@ class PCMCBot(commands.Bot):
         self.loop.call_later(60, self.i_am_alive, filename)
 
     async def _update_connection(self):
-        # self.loop.call_later(60, self.update_connection)
-
-        online = await server.connect()
-        if online:
-            si = await serveur.get_online_players()
-            players = si.n_players
-            s = "" if players == 1 else "s"
-            activity = discord.Game(f"Minecraft 🟢 {players} joueur{s}")
-            status = discord.Status.online
-        else:
-            activity = discord.Game("Minecraft 🔴 OFFLINE")
-            status = discord.Status.dnd
-
-        if self.old_activity != activity:
-            await tools.log(f"Présence mise à jour : {activity}")
-            await self.change_presence(activity=activity, status=status)
-            self.old_activity = activity
+        self.loop.call_later(2, self.update_connection)
+        await parse_console()
 
 
     def update_connection(self):

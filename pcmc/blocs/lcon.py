@@ -106,3 +106,7 @@ async def command(cmd, wait=0.5):
     raw = next(config.logs)
     await asyncio.sleep(wait)
     return raw
+
+
+async def get_last_messages():
+    return next(config.logs)

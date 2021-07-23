@@ -94,3 +94,7 @@ async def command(cmd, wait=0.5):
             raise
 
         return await config.mcr.command(cmd)
+
+
+async def get_last_messages():
+    return ""
