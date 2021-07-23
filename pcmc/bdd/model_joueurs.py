@@ -110,7 +110,7 @@ class Joueur(base.TableBase):
         Returns:
             :class:`discord.Webhook`
         """
-        return config.bot.fetch_webhook(self._webhook_id)
+        return await config.bot.fetch_webhook(self._webhook_id)
 
 
     @classmethod
